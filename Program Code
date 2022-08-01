@@ -1,0 +1,194 @@
+var angle = 74; 
+var v = 12; 
+var dt = 0.02;
+var g = -9.8;
+
+dt = max(0.001, dt);
+
+var p = 1.2; 
+var mass = 3; 
+var dragC = 0.5; 
+var faceArea = 0.1;
+
+var x = 0; 
+var y = 0; 
+var t = 0;
+var maxHeight = 0;
+
+var pixelsPerMeter = 29; 
+var groundPixel = 252; 
+
+
+var v_x = v * cos(angle); 
+var v_y = v * sin(angle); 
+
+var projectile = getImage("cute/Rock");
+var ground = getImage("cute/GrassBlock");
+var sky = getImage("space/background");
+
+var airResistance = function (velocity, dragCoef, area) {
+    var force = 0;
+
+   
+   
+    
+    force = force * -1*velocity/abs(velocity); 
+    return force;
+};
+
+var resetState = function() {
+    v_x = v * cos(angle);
+    v_y = v * sin(angle);
+    x = 0; 
+    y = 0;
+    t = 0;
+    maxHeight = 0;
+};
+
+var drawProjectile = function(x, y, xMag, yMag) {
+    var projectileWidth = 33;
+    var projectileHeight = 50; 
+    var vectorScale = 8; 
+    
+    strokeWeight(7);
+    var gravityColor = color(72, 80, 128);
+    stroke(gravityColor);
+    var xStart = x*pixelsPerMeter + projectileWidth/2;
+    var yStart = groundPixel - y * pixelsPerMeter + projectileHeight/1.5;
+    var yEnd = groundPixel - y * pixelsPerMeter + projectileHeight/1.5 - g*vectorScale;
+    line(xStart, yStart, xStart, yEnd);
+    triangle(xStart, yEnd, xStart+2.5, yEnd+5*(yStart-yEnd)/abs(yStart-yEnd),  xStart-2.5, yEnd+5*(yStart-yEnd)/abs(yStart-yEnd) );
+    fill(gravityColor);
+    textSize(19);
+    text("g", xStart + -16, (yStart + yEnd)/2);
+    
+    image(projectile, x*pixelsPerMeter, groundPixel - y * pixelsPerMeter, projectileWidth, projectileHeight);
+    
+    var xEnd = x*pixelsPerMeter + projectileWidth/2 + xMag*vectorScale;
+    yEnd = groundPixel - y * pixelsPerMeter + projectileHeight/1.5 - yMag*vectorScale;
+    
+    stroke(255, 234, 0);
+    fill(255, 234, 0);
+    strokeWeight(2);
+    
+    if (y >= 0) {
+        if (abs(xMag) > 0.5) {
+            line(xStart, yStart, xEnd, yStart);
+            triangle(xEnd, yStart, xEnd-5, yStart+2.5, xEnd-5, yStart-2.5);
+        }
+        
+        stroke(255, 191, 0);
+        fill(255, 191, 0);
+        if (abs(yMag) > 0.5) {
+            line(xStart, yStart, xStart, yEnd);
+            triangle(xStart, yEnd, xStart+2.5, yEnd+5*(yStart-yEnd)/abs(yStart-yEnd),  xStart-2.5, yEnd+5*(yStart-yEnd)/abs(yStart-yEnd) );
+        }
+    }
+};
+
+var drawArrow =  function(xStart, yStart, xEnd, yEnd) {
+    line(xStart, yStart, xEnd, yEnd);
+    if (xStart === xEnd) { 
+        
+    }
+};
+
+var drawInfo = function(time, v_x, v_y, x, y) {
+    
+    if (y >= maxHeight) {
+        maxHeight = y;
+    }
+    
+    var fontSize = 15;
+    textSize(fontSize); 
+    fill(230, 218, 218);
+    var xBoundary = 5;
+    var rowSpacing = fontSize * 1.2;
+    text("launch angle :" + round(angle*10)/10 + " degrees", xBoundary, 1*rowSpacing);
+    text("time: " + round(time*100)/100 + " s", xBoundary, 2*rowSpacing);
+    text("y: " + round(y*100)/100 + " m", xBoundary, 3*rowSpacing);
+    text("max y: " + round(maxHeight*100)/100 + " m", xBoundary, 4*rowSpacing);
+    text("x: " + round(x*100)/100 + " m", xBoundary, 5*rowSpacing);
+    
+    var xColumn2 = 194; 
+    fill(255, 191, 0);
+    text("vertical velocity: " + round(v_y*100)/100 + " m/s", xColumn2, 1*rowSpacing);
+    fill(247, 255, 0);
+    text("horizontal velocity: " + round(v_x*100)/100 + " m/s", xColumn2, 2*rowSpacing);
+    
+    
+};
+
+var drawCannon = function() {
+    
+    stroke(97, 95, 95);
+    strokeWeight(1);
+    fill(122, 117, 27);
+    
+    var baseBottom = groundPixel + 59;
+    var baseLeft = 3;
+    var baseWidth = 26;
+    var baseHeight = 25;
+    
+    translate((2*baseLeft + baseWidth)/2, baseBottom - baseHeight);
+    rotate(-1 * angle);
+    var cannonWidth = 29;
+    var cannonLength = 30;
+    var xStart = -15;
+    ellipse(xStart + 3, 0, cannonWidth, cannonWidth);
+    rect(xStart, 14, cannonLength, -1*cannonWidth);
+    noStroke();
+    fill(138, 126, 103);
+    rect(xStart+ 1, -1, cannonLength -1 , -1* cannonWidth + 24);
+    
+    resetMatrix();
+    strokeWeight(1);
+    stroke(112, 93, 93);
+    triangle(baseLeft, baseBottom, baseLeft + baseWidth, baseBottom, (2*baseLeft + baseWidth)/2, baseBottom - baseHeight);
+};
+
+var drawBackground = function() {
+    image(sky, 0, 0);
+    image(ground, 0, 241);
+    image(ground, 73, 241);
+    image(ground, 172, 241);
+    image(ground, 272, 241);
+    image(ground, 372, 241);
+};
+
+
+
+var draw = function() {
+    angle = min(90, mouseX*92/400);
+    
+    if (mouseIsPressed) {
+        resetState();
+    }
+    
+    drawBackground();
+    if (y >= 0) {  
+        
+        t += dt; 
+      
+        var yNetAcceleration = g + airResistance(v_y, dragC, faceArea)/mass;
+        var xNetAcceleration = airResistance(v_x, dragC, faceArea)/mass;
+        
+        var v_yNew = v_y + (yNetAcceleration * dt); 
+        var v_xNew = v_x + (xNetAcceleration * dt);
+         
+        var v_yAverage = (v_yNew + v_y)/2; //Avg v_y over dt
+        var v_xAverage = (v_x + v_xNew)/2;
+        
+        x += v_xAverage * dt;
+        y += v_yAverage * dt;
+        
+        v_y = v_yNew;  
+        v_x = v_xNew;
+    }
+    drawProjectile(x, y, v_x, v_y);
+    
+    drawInfo(t, v_x, v_y, x, y);
+    drawCannon();  
+    
+};
+
