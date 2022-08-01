@@ -191,3 +191,5 @@ var draw = function() {
     drawCannon();  
     
 };
+
+//May be compiled on any average IED but for online compiling, client requires pre-saved images for variables projectile, ground, and sky
