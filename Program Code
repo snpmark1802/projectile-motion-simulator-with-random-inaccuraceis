@@ -192,4 +192,4 @@ var draw = function() {
     
 };
 
-//May be compiled on any average IED but for online compiling, client requires pre-saved images for variables projectile, ground, and sky
+//May be compiled on any average IED but for online compiling, client requires pre-saved image library for variables projectile, ground, and sky (something like khanacademy)
