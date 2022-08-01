@@ -22,9 +22,9 @@ var groundPixel = 252;
 var v_x = v * cos(angle); 
 var v_y = v * sin(angle); 
 
-var projectile = getImage("cute/Rock");
-var ground = getImage("cute/GrassBlock");
-var sky = getImage("space/background");
+var projectile = getImage("//SomeImageOfBall");
+var ground = getImage("//SurfaceForGround");
+var sky = getImage("//BackgroundSpace");
 
 var airResistance = function (velocity, dragCoef, area) {
     var force = 0;
@@ -191,4 +191,3 @@ var draw = function() {
     drawCannon();  
     
 };
-
