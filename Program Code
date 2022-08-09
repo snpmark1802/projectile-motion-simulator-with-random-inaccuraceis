@@ -7,7 +7,7 @@ dt = max(0.001, dt);
 
 var p = 1.2; 
 var mass = 3; 
-var randomiser = 0.5; 
+var randomiser = 0.5; //0-5
 var faceArea = 0.1;
 
 var x = 0; 
