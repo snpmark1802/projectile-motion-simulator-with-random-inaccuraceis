@@ -7,7 +7,7 @@ dt = max(0.001, dt);
 
 var p = 1.2; 
 var mass = 3; 
-var dragC = 0.5; 
+var randomiser = 0.5; 
 var faceArea = 0.1;
 
 var x = 0; 
@@ -170,8 +170,8 @@ var draw = function() {
         
         t += dt; 
       
-        var yNetAcceleration = g + airResistance(v_y, dragC, faceArea)/mass;
-        var xNetAcceleration = airResistance(v_x, dragC, faceArea)/mass;
+        var yNetAcceleration = g + airResistance(v_y, randomiser, faceArea)/mass;
+        var xNetAcceleration = airResistance(v_x, randomiser, faceArea)/mass;
         
         var v_yNew = v_y + (yNetAcceleration * dt); 
         var v_xNew = v_x + (xNetAcceleration * dt);
